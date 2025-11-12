@@ -8,6 +8,7 @@ An MCP (Model Context Protocol) server that automatically generates and validate
 ## Overview
 
 Building data ingestion pipelines is complex and error-prone, especially when dealing with:
+
 - Diverse file formats and encodings (CSV, JSON, etc.)
 - International number formats (European vs US)
 - Data quality issues (UTF-8 BOMs, sparse data, missing values)
@@ -19,6 +20,7 @@ This MCP server solves these problems with a **three-contract architecture** tha
 ## Three-Contract Architecture
 
 ### 1. Source Contracts
+
 **Automatically analyze source data files**
 
 ```bash
@@ -29,6 +31,7 @@ generate_source_contract(
 ```
 
 Returns a contract with:
+
 - File format, encoding, and delimiter detection
 - Automatic schema inference with data types
 - Quality metrics (row counts, sample data, issues)
@@ -36,6 +39,7 @@ Returns a contract with:
 - Support for European number formats (1.234,56)
 
 ### 2. Destination Contracts
+
 **Define target schemas and validation rules**
 
 ```bash
@@ -50,11 +54,13 @@ generate_destination_contract(
 ```
 
 Returns a contract with:
+
 - Target schema definition
 - Data type specifications
 - Validation rules and constraints
 
 ### 3. Transformation Contracts
+
 **Map source to destination with transformation logic**
 
 ```bash
@@ -66,6 +72,7 @@ generate_transformation_contract(
 ```
 
 Returns a contract template for:
+
 - Field mappings between source and destination
 - Transformation rules (type conversions, formatting)
 - Enrichment logic (derived fields, lookups)
@@ -150,3 +157,9 @@ All code is fully typed with Python 3.13+ type hints. CI runs automatically on p
 - **Pydantic**: 2.0.0+
 
 See `pyproject.toml` for complete dependency list.
+
+## License
+
+This project is licensed under **AGPL-3.0** for open source use. See [LICENSE](LICENSE) for details.
+
+**Commercial licenses** are available if you want to use this software in a closed-source product. Contact [jacobjnilsson@gmail.com](mailto:jacobjnilsson@gmail.com) for inquiries.
