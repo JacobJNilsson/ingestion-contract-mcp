@@ -1,5 +1,8 @@
 # Data Ingestion Contract Generator
 
+[![CI](https://github.com/JacobJNilsson/ingestion_contract_mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/JacobJNilsson/ingestion_contract_mcp/actions/workflows/ci.yml)
+[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
+
 An MCP (Model Context Protocol) server that automatically generates and validates contracts for data ingestion pipelines. Designed to help AI agents and developers build reliable, type-safe data workflows with automated schema detection and quality assessment.
 
 ## Overview
@@ -72,7 +75,7 @@ Returns a contract template for:
 
 ### Prerequisites
 
-- Python 3.11 or newer (3.13 recommended)
+- Python 3.13+
 - [uv](https://github.com/astral-sh/uv) package manager
 
 ### Installation
@@ -211,10 +214,19 @@ uv run pytest --cov=mcp_server --cov-report=html
 
 All code is fully typed with Python 3.13+ type hints and validated by mypy in strict mode.
 
+### Continuous Integration
+
+All pull requests run automated checks for linting, formatting, type checking, and tests on Python 3.13.
+
 ## Project Structure
 
 ```
 ingestion_contract_mcp/
+├── .github/                 # GitHub configuration
+│   └── workflows/
+│       └── ci.yml           # CI/CD pipeline
+├── .cursor/                 # Cursor IDE configuration
+│   └── rules/               # Project-specific AI rules
 ├── mcp_server/              # Main package
 │   ├── server.py            # MCP server entry point
 │   ├── contract_handler.py  # Business logic layer
@@ -229,8 +241,6 @@ ingestion_contract_mcp/
 │   ├── test_contract_generator.py
 │   └── test_contract_generator_data_quality.py
 ├── data/                    # Example data files
-├── .cursor/                 # Cursor IDE configuration
-│   └── rules/               # Project-specific AI rules
 ├── pyproject.toml           # Project metadata and deps
 ├── Makefile                 # Development commands
 ├── uv.lock                  # Locked dependencies
