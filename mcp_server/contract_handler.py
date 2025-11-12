@@ -12,6 +12,7 @@ from mcp_server.contract_generator import (
     generate_transformation_contract,
 )
 from mcp_server.database_analyzer import (
+    generate_database_multi_source_contracts,
     generate_database_source_contract,
     list_database_tables,
     sanitize_connection_string,
@@ -255,6 +256,54 @@ class ContractHandler:
             # Log with sanitized connection string
             sanitized_conn = sanitize_connection_string(connection_string)
             error_msg = f"Failed to list tables for {sanitized_conn}: {e!s}"
+            return json.dumps({"error": error_msg}, indent=2)
+
+    def generate_database_multi_source_contracts(
+        self,
+        connection_string: str,
+        database_type: str,
+        schema: str | None = None,
+        tables: list[str] | None = None,
+        include_relationships: bool = True,
+        sample_size: int = 1000,
+    ) -> str:
+        """Generate source contracts for multiple tables with relationships
+
+        Args:
+            connection_string: Database connection string
+            database_type: Database type (postgresql, mysql, sqlite)
+            schema: Database schema name (optional)
+            tables: List of specific tables (None = all tables)
+            include_relationships: Whether to detect FK relationships
+            sample_size: Number of rows to sample per table
+
+        Returns:
+            JSON string containing list of contracts with relationship metadata
+        """
+        try:
+            # Generate contracts
+            contracts = generate_database_multi_source_contracts(
+                connection_string=connection_string,
+                database_type=database_type,
+                schema=schema,
+                tables=tables,
+                include_relationships=include_relationships,
+                sample_size=sample_size,
+            )
+
+            # Convert to JSON-serializable format
+            contracts_data = [
+                contract.model_dump(mode="json", by_alias=True, exclude_none=False) for contract in contracts
+            ]
+
+            return json.dumps({"contracts": contracts_data, "count": len(contracts)}, indent=2)
+
+        except ValueError as e:
+            return json.dumps({"error": f"Validation error: {e!s}"}, indent=2)
+        except Exception as e:
+            # Log with sanitized connection string
+            sanitized_conn = sanitize_connection_string(connection_string)
+            error_msg = f"Failed to generate multi-table contracts for {sanitized_conn}: {e!s}"
             return json.dumps({"error": error_msg}, indent=2)
 
     def analyze_source(self, source_path: str) -> str:
