@@ -11,7 +11,11 @@ from mcp_server.contract_generator import (
     generate_source_contract,
     generate_transformation_contract,
 )
-from mcp_server.database_analyzer import generate_database_source_contract, sanitize_connection_string
+from mcp_server.database_analyzer import (
+    generate_database_source_contract,
+    list_database_tables,
+    sanitize_connection_string,
+)
 from mcp_server.models import Contract, DestinationContract, SourceContract, TransformationContract
 
 
@@ -211,6 +215,46 @@ class ContractHandler:
             # Log with sanitized connection string
             sanitized_conn = sanitize_connection_string(connection_string)
             error_msg = f"Failed to generate database source contract for {sanitized_conn}: {e!s}"
+            return json.dumps({"error": error_msg}, indent=2)
+
+    def list_database_tables(
+        self,
+        connection_string: str,
+        database_type: str,
+        schema: str | None = None,
+        include_views: bool = False,
+        include_row_counts: bool = True,
+    ) -> str:
+        """List all tables in a database or schema with metadata
+
+        Args:
+            connection_string: Database connection string
+            database_type: Database type (postgresql, mysql, sqlite)
+            schema: Database schema name (optional)
+            include_views: Whether to include views in the results
+            include_row_counts: Whether to query row counts
+
+        Returns:
+            JSON string containing list of tables with metadata
+        """
+        try:
+            # List tables
+            tables = list_database_tables(
+                connection_string=connection_string,
+                database_type=database_type,
+                schema=schema,
+                include_views=include_views,
+                include_row_counts=include_row_counts,
+            )
+
+            return json.dumps({"tables": tables, "count": len(tables)}, indent=2)
+
+        except ValueError as e:
+            return json.dumps({"error": f"Validation error: {e!s}"}, indent=2)
+        except Exception as e:
+            # Log with sanitized connection string
+            sanitized_conn = sanitize_connection_string(connection_string)
+            error_msg = f"Failed to list tables for {sanitized_conn}: {e!s}"
             return json.dumps({"error": error_msg}, indent=2)
 
     def analyze_source(self, source_path: str) -> str:

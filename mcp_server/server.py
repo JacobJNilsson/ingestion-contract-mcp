@@ -160,6 +160,40 @@ async def list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            name="list_database_tables",
+            description=(
+                "List all tables in a database or schema with metadata. "
+                "Helps discover available tables before generating contracts. "
+                "Returns table names, row counts, column counts, and primary key information."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "connection_string": {
+                        "type": "string",
+                        "description": "Database connection string (e.g., 'postgresql://user:pass@localhost:5432/mydb')",
+                    },
+                    "database_type": {
+                        "type": "string",
+                        "description": "Database type: 'postgresql', 'mysql', or 'sqlite'",
+                    },
+                    "schema": {
+                        "type": "string",
+                        "description": "Database schema name (optional, defaults to 'public' for PostgreSQL)",
+                    },
+                    "include_views": {
+                        "type": "boolean",
+                        "description": "Whether to include views in the results (default: false)",
+                    },
+                    "include_row_counts": {
+                        "type": "boolean",
+                        "description": "Whether to query row counts for each table (default: true, may be slow)",
+                    },
+                },
+                "required": ["connection_string", "database_type"],
+            },
+        ),
+        Tool(
             name="analyze_source",
             description=(
                 "Analyze a source file and return detailed metadata including file format, encoding, "
@@ -206,6 +240,7 @@ async def call_tool(name: str, arguments: dict[str, object]) -> list[TextContent
         "generate_destination_contract": contract_handler.generate_destination_contract,
         "generate_transformation_contract": contract_handler.generate_transformation_contract,
         "generate_database_source_contract": contract_handler.generate_database_source_contract,
+        "list_database_tables": contract_handler.list_database_tables,
         "analyze_source": contract_handler.analyze_source,
         "validate_contract": contract_handler.validate_contract,
     }
