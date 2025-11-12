@@ -194,6 +194,45 @@ async def list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            name="generate_database_multi_source_contracts",
+            description=(
+                "Generate source contracts for multiple tables with relationship analysis. "
+                "Detects foreign key relationships, calculates load order, and generates "
+                "contracts for all or selected tables. Returns multiple contracts with relationship metadata."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "connection_string": {
+                        "type": "string",
+                        "description": "Database connection string (e.g., 'postgresql://user:pass@localhost:5432/mydb')",
+                    },
+                    "database_type": {
+                        "type": "string",
+                        "description": "Database type: 'postgresql', 'mysql', or 'sqlite'",
+                    },
+                    "schema": {
+                        "type": "string",
+                        "description": "Database schema name (optional, defaults to 'public' for PostgreSQL)",
+                    },
+                    "tables": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "List of specific table names to analyze (optional, defaults to all tables)",
+                    },
+                    "include_relationships": {
+                        "type": "boolean",
+                        "description": "Whether to detect foreign key relationships and calculate load order (default: true)",
+                    },
+                    "sample_size": {
+                        "type": "integer",
+                        "description": "Number of rows to sample per table (default: 1000)",
+                    },
+                },
+                "required": ["connection_string", "database_type"],
+            },
+        ),
+        Tool(
             name="analyze_source",
             description=(
                 "Analyze a source file and return detailed metadata including file format, encoding, "
@@ -240,6 +279,7 @@ async def call_tool(name: str, arguments: dict[str, object]) -> list[TextContent
         "generate_destination_contract": contract_handler.generate_destination_contract,
         "generate_transformation_contract": contract_handler.generate_transformation_contract,
         "generate_database_source_contract": contract_handler.generate_database_source_contract,
+        "generate_database_multi_source_contracts": contract_handler.generate_database_multi_source_contracts,
         "list_database_tables": contract_handler.list_database_tables,
         "analyze_source": contract_handler.analyze_source,
         "validate_contract": contract_handler.validate_contract,
